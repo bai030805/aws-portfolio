@@ -1,6 +1,4 @@
-# VPC Design with Terraform
-
-# AWS Three-Tier Web Application
+# Deploy VPC with Terraform
 
 ## Architecture Overview
 
