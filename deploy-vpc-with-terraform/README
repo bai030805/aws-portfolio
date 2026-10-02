@@ -1,41 +1,20 @@
-# AWS Three-Tier Web Application - Phase 1: VPC Foundation
+# 项目介绍
 
-## Project Overview
+1. 本项目演示三层高可用网站架构下的VPC架构
+2. 本项目创建VPC及网络架构，包括Public Subnet、Private Subnet、Route Table、IGW等
+3. 本项目用terraform进行资源创建
 
-This project is the first phase of an AWS three-tier web application architecture portfolio.
+# 项目目标
 
-The goal of this phase is to build a secure and scalable AWS network foundation using Terraform. The infrastructure includes a custom VPC, multi-AZ subnet design, Internet Gateway, route tables, and subnet-to-route-table associations.
+1. 学习AWS三层架构设计
+2. 学习Terraform基础设施即代码
+3. 理解VPC、subnet、Route Table、IGW的关系
+4. 为将来扩展到ALB/EC2/RDS打好网络基础
+5. 作为AWS架构学习的作品集
 
-This foundation will be extended in future phases with:
+# 架构说明
 
-- Application Load Balancer (ALB)
-- ECS Fargate
-- Amazon RDS
-- CloudFront
-- Security Groups
-- IAM
-- CloudWatch Monitoring
 
-The final target architecture is a production-style three-tier web application running on AWS.
-
----
-
-# Project Goals
-
-The objectives of this project are:
-
-- Understand AWS VPC architecture design
-- Learn subnet segmentation strategy
-- Understand the relationship between:
-  - VPC
-  - Subnet
-  - Availability Zone
-  - Internet Gateway
-  - Route Table
-- Implement Infrastructure as Code using Terraform
-- Build a reusable AWS architecture portfolio for cloud architect career development
-
----
 
 # Architecture Overview
 
