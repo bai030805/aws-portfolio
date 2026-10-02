@@ -14,6 +14,7 @@
 
 # 架构说明
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/758e940f-5e9b-4b11-b878-86e9e3a8609c" />
 
 
 # Architecture Overview
