@@ -16,339 +16,59 @@
 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/dcb8eefe-be08-4453-ab67-7636342bfeea" />
 
+**Region**: ap-southeast-1
 
-# Architecture Overview
+**Availability Zones**: ap-southeast-1a, ap-southeast-1b
 
-## AWS Region
+**VPC CIDR**: 10.0.0.0/16
 
-```
-Region: ap-southeast-1
-```
-
-## Availability Zones
-
-This design uses two Availability Zones:
-
-```
-ap-southeast-1a
-ap-southeast-1b
-```
-
-The multi-AZ design provides the foundation for future high availability deployment.
-
----
-
-# Network Architecture
-
-## VPC Design
-
-```
-VPC CIDR:
-
-10.0.0.0/16
-```
-
-The VPC is divided into three logical layers:
-
-```
-VPC 10.0.0.0/16
-
-├── Public Layer
-│
-├── Application Layer
-│
-└── Database Layer
-```
-
----
-
-# Subnet Design
-
-## Public Subnets
-
-Used for Internet-facing resources.
-
-Future resources:
-
-- Application Load Balancer
-- NAT Gateway
-
-
+**Public Subnet**
 | Subnet | Availability Zone | CIDR |
 |---|---|---|
 | Public Subnet A | ap-southeast-1a | 10.0.1.0/24 |
 | Public Subnet B | ap-southeast-1b | 10.0.2.0/24 |
 
----
 
-## Private Application Subnets
-
-Used for application workloads.
-
-Future resources:
-
-- ECS Tasks
-- Application containers
-
-
+**App Private Subnet**
 | Subnet | Availability Zone | CIDR |
 |---|---|---|
 | App Private Subnet A | ap-southeast-1a | 10.0.11.0/24 |
 | App Private Subnet B | ap-southeast-1b | 10.0.12.0/24 |
 
----
 
-## Private Database Subnets
-
-Used for database workloads.
-
-Future resources:
-
-- Amazon RDS
-
+**DB Private Subnet**
 
 | Subnet | Availability Zone | CIDR |
 |---|---|---|
 | DB Private Subnet A | ap-southeast-1a | 10.0.21.0/24 |
 | DB Private Subnet B | ap-southeast-1b | 10.0.22.0/24 |
 
----
 
-# Network Diagram
-
-```
-                         Internet
-
-                            |
-                            |
-
-                 Internet Gateway (IGW)
-
-                            |
-
-                    VPC 10.0.0.0/16
-
-
-        +--------------------------------+
-        |                                |
-        |                                |
-   ap-southeast-1a                 ap-southeast-1b
-
-
- Public Subnet A                 Public Subnet B
- 10.0.1.0/24                     10.0.2.0/24
-
-
- App Private A                  App Private B
- 10.0.11.0/24                   10.0.12.0/24
-
-
- DB Private A                   DB Private B
- 10.0.21.0/24                   10.0.22.0/24
-
-
-        +--------------------------------+
-```
-
----
-
-# Internet Gateway Design
-
-## Internet Gateway Scope
-
-An Internet Gateway is a VPC-level resource.
-
-Design:
-
-```
-One VPC
- |
- +-- One Internet Gateway
- |
- +-- Multiple Availability Zones
-```
-
-The Internet Gateway is not created per Availability Zone.
-
-AWS manages the high availability of the Internet Gateway.
-
----
-
-# Route Table Design
-
-## Public Route Table
-
-Associated subnets:
-
-- Public Subnet A
-- Public Subnet B
-
-
-Routing:
-
-| Destination | Target |
-|---|---|
-| 10.0.0.0/16 | local |
-| 0.0.0.0/0 | Internet Gateway |
-
-
-Purpose:
-
-Allow public subnet resources to communicate with the Internet.
-
----
-
-## Private Application Route Table
-
-Associated subnets:
-
-- App Private Subnet A
-- App Private Subnet B
-
-
-Current routing:
-
-| Destination | Target |
-|---|---|
-| 10.0.0.0/16 | local |
-
-
-Future enhancement:
-
-```
-0.0.0.0/0 → NAT Gateway
-```
-
-This will allow ECS workloads to access the Internet without exposing them directly.
-
----
-
-## Private Database Route Table
-
-Associated subnets:
-
-- DB Private Subnet A
-- DB Private Subnet B
-
-
-Routing:
-
-| Destination | Target |
-|---|---|
-| 10.0.0.0/16 | local |
-
-
-Purpose:
-
-Keep database resources isolated from direct Internet access.
-
----
-
-# Terraform Structure
-
-Current Terraform files:
-
-```
-three-tier-web-app/
-
-├── provider.tf
-├── vpc.tf
-├── subnet.tf
-├── internet_gateway.tf
-├── route_table.tf
-├── route_table_association.tf
-└── README.md
-```
-
----
-
-# Terraform Resources Created
-
-Current implementation:
-
-## VPC
-
-- aws_vpc
-
-
-## Subnets
-
-- 6 AWS subnets
-
-```
-2 x Public Subnet
-2 x Private Application Subnet
-2 x Private Database Subnet
-```
-
-
-## Internet Connectivity
-
-- 1 Internet Gateway
-
-
-## Routing
-
-- 3 Route Tables
-
-```
-Public Route Table
-Private Application Route Table
-Private Database Route Table
-```
-
-
-## Associations
-
-- 6 Route Table Associations
-
-```
-Public Subnet → Public Route Table
-
-App Private Subnet → App Private Route Table
-
-DB Private Subnet → DB Private Route Table
-```
-
----
-
-# Deployment
-
-Initialize Terraform:
+# Terraform 部署
 
 ```bash
+
+# Initialize Terraform:
 terraform init
-```
 
-Format Terraform files:
 
-```bash
+# Format Terraform files:
 terraform fmt
-```
 
-Validate configuration:
-
-```bash
+# Validate configuration:
 terraform validate
-```
 
-Review changes:
 
-```bash
+# Review changes:
 terraform plan
-```
 
-Deploy infrastructure:
-
-```bash
+# Deploy infrastructure:
 terraform apply
+
 ```
 
----
 
-# Validation
-
-Validation checklist:
+# 验证列表
 
 - [x] VPC created successfully
 - [x] Six subnets created
@@ -358,177 +78,45 @@ Validation checklist:
 - [x] Private route tables created
 - [x] Subnets associated with correct route tables
 
----
 
-# Security Considerations
 
-Current design principles:
+# 安全考虑
 
-- Public resources are separated from private workloads
-- Application layer does not receive direct Internet exposure
-- Database layer is isolated from the Internet
-- Network segmentation follows three-tier architecture principles
+- 公网访问与内网访问分开
+- 应用层不会暴露到互联网
+- 数据库层与互联网隔离
+- 网络分段遵循三层架构的最佳实践
 
-Future improvements:
+# 成本考虑
 
-- Security Groups
-- IAM roles
-- Secrets Manager
-- Network ACL review
-
----
-
-# Cost Considerations
-
-## Free Resources
-
-The following resources do not incur hourly charges:
-
+以下为免费资源：
 - VPC
 - Subnets
 - Internet Gateway
 - Route Tables
 - Route Table Associations
 
-
-## Resources That May Incur Charges Later
-
-Future phases will introduce:
-
-- NAT Gateway
-- Application Load Balancer
-- ECS Fargate
-- Amazon RDS
-- CloudFront
-
-
-After testing, destroy the environment:
-
+测试完成后，删除环境：
 ```bash
 terraform destroy
 ```
 
----
-
-# Next Steps
-
-Future implementation phases:
-
-## Phase 2: NAT Gateway
-
-Add outbound Internet access for private application subnets.
-
-Architecture:
-
-```
-Private App Subnet
-        |
-        |
-   NAT Gateway
-        |
-        |
- Internet Gateway
-```
-
----
-
-## Phase 3: Application Layer
-
-Add:
-
-- ECR
-- ECS Fargate
-- ALB
 
 
-Architecture:
+# 经验总结
 
-```
-Internet
+IGW
+* Internet Gateway（IGW）的高可用由 AWS 负责，用户不需要也不能自己部署多个 IGW 来实现 HA。
+* Internet Gateway（IGW）不是 AZ 级别的资源，而是 VPC 级别的资源。
+* 一个 VPC 只需要一个 IGW，不需要每个 AZ 创建一个。
 
-   |
+创建路由表
+* 每一个 Route Table 创建后，都会自动有一条：10.0.0.0/16 -> local
+* 所以如果只是AWS内部使用，可以不用单独设置路由
+* 10.0.0.0/16 → local 是 VPC 内部通信的默认路由，它包含你的 10.0.1.0/24 subnet，是正常且必须存在的。
 
- ALB
 
-   |
 
- ECS Tasks
 
-   |
 
- RDS
-```
 
----
-
-## Phase 4: Database Layer
-
-Add:
-
-- Amazon RDS
-- Multi-AZ deployment
-- Database security controls
-
----
-
-## Phase 5: Edge Layer
-
-Add:
-
-- CloudFront
-- HTTPS
-- CDN caching
-
----
-
-# Lessons Learned
-
-## 1. Subnets are not inherently public or private
-
-A subnet becomes public or private based on its route table configuration.
-
-Example:
-
-```
-Public Subnet:
-
-0.0.0.0/0 → Internet Gateway
-```
-
-Private Application Subnet:
-
-```
-0.0.0.0/0 → NAT Gateway
-```
-
----
-
-## 2. Internet Gateway is a VPC-level resource
-
-An Internet Gateway:
-
-- belongs to a VPC
-- is not associated with a specific Availability Zone
-- does not require multiple deployments for HA
-
----
-
-## 3. Route Tables define network behavior
-
-The same subnet type can behave differently depending on route configuration.
-
-Route tables are the key component controlling traffic flow inside and outside the VPC.
-
----
-
-# Author Notes
-
-This project is part of my AWS Cloud Architecture Portfolio.
-
-The purpose is to demonstrate practical understanding of:
-
-- AWS networking
-- Infrastructure as Code
-- Cloud architecture principles
-- High availability design
-- Security-oriented architecture thinking
