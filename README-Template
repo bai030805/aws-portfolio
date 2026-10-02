@@ -1,249 +1,30 @@
-你的这个作品集描述，建议不要只写“我做了什么”，而要写成：
+# 项目介绍
 
-1. **这是什么项目**
-2. **为什么这样设计**
-3. **你学到了什么**
-4. **别人怎么快速看懂你的能力**
 
-对于你这个 **三层 Web 应用（VPC + ALB + ECS + RDS + CloudFront）**，作品集描述里建议至少包含下面这些内容。
+# 项目目标
 
----
 
-# 一、项目简介（Project Overview）
+# 架构说明
 
-先用 3~5 句话说明项目是什么。
 
-例如：
+# Terraform 部署
 
-> This project demonstrates a highly available three-tier web application architecture on AWS.  
-> The infrastructure is designed with a custom VPC, public and private subnets across two Availability Zones, and Internet access controlled through an Internet Gateway and route tables.  
-> In later phases, the application will be extended with ALB, ECS, RDS, and CloudFront to build a complete production-style web architecture.
 
-中文也可以写一版，方便自己整理思路。
+# 验证列表
 
----
 
-# 二、项目目标（Goals）
 
-说明你做这个项目的目的。
+# 安全考虑
 
-例如：
 
-- 学习 AWS 三层架构设计
-- 理解 VPC、Subnet、Route Table、IGW、NAT Gateway 的关系
-- 练习 Terraform 基础设施即代码
-- 为以后扩展到 ALB / ECS / RDS 打基础
-- 作为 AWS 架构师岗位的作品集展示
+# 成本考虑
 
-这一部分很重要，因为它告诉面试官：  
-**你不是在堆服务，而是在系统性学习架构。**
 
----
 
-# 三、架构说明（Architecture Overview）
+# 经验总结
 
-这一部分要说明：
 
-- Region
-- AZ 数量
-- VPC CIDR
-- Subnet 划分
-- 每类子网的用途
-- Internet 访问路径
 
-例如可以写：
 
-- **Region:** ap-southeast-1
-- **Availability Zones:** ap-southeast-1a, ap-southeast-1b
-- **VPC CIDR:** 10.0.0.0/16
-- **Public Subnets:** for Internet-facing resources such as ALB and NAT Gateway
-- **Private App Subnets:** for ECS tasks
-- **Private DB Subnets:** for database layer such as RDS
 
----
 
-# 四、网络设计（Network Design）
-
-这是你这个阶段最核心的内容。
-
-建议说明：
-
-## 1. 子网划分
-例如：
-
-- Public Subnet A: 10.0.1.0/24
-- Public Subnet B: 10.0.2.0/24
-- App Private Subnet A: 10.0.11.0/24
-- App Private Subnet B: 10.0.12.0/24
-- DB Private Subnet A: 10.0.21.0/24
-- DB Private Subnet B: 10.0.22.0/24
-
-## 2. 路由设计
-例如：
-
-- Public Route Table includes `0.0.0.0/0 -> Internet Gateway`
-- App Private Route Table currently keeps only local routing and will later be extended with NAT Gateway
-- DB Private Route Table remains isolated with only local routing
-
-## 3. 为什么这么设计
-这部分非常加分。比如：
-
-- Public subnets are used for Internet-facing resources
-- Application subnets are isolated from direct Internet access
-- Database subnets are further isolated for security
-- Multi-AZ design improves availability
-
----
-
-# 五、Terraform 实现（Terraform Implementation）
-
-说明你是怎么组织代码的。
-
-例如：
-
-- `provider.tf` — provider configuration
-- `vpc.tf` — VPC definition
-- `subnet.tf` — subnet definitions
-- `internet_gateway.tf` — IGW
-- `route_table.tf` — route tables and routes
-- `route_table_association.tf` — subnet associations
-
-如果你现在还没拆文件，也可以先写成一个 `main.tf`，但 README 里建议说明未来会模块化。
-
----
-
-# 六、已完成内容（What Has Been Implemented）
-
-这一部分要写“当前阶段做到哪”。
-
-例如：
-
-- Created a custom VPC
-- Configured six subnets across two Availability Zones
-- Attached an Internet Gateway to the VPC
-- Created separate route tables for public, application, and database tiers
-- Associated subnets with their corresponding route tables
-
-这样别人一眼就知道你当前进度。
-
----
-
-# 七、后续规划（Next Steps）
-
-这部分很适合做系列作品集。
-
-例如：
-
-- Add NAT Gateway for outbound Internet access from private application subnets
-- Deploy an Application Load Balancer
-- Run containerized applications on ECS Fargate
-- Provision Amazon RDS in DB private subnets
-- Add CloudFront for content delivery and caching
-
-这会让作品集显得更完整，而不是“半成品”。
-
----
-
-# 八、安全设计（Security Considerations）
-
-哪怕现在还没配 Security Group，也应该先写思路。
-
-例如：
-
-- Public access is limited to public subnets only
-- Application and database tiers are placed in private subnets
-- Future phases will apply security groups to restrict traffic between ALB, ECS, and RDS
-- Database will not be directly exposed to the Internet
-
-这一部分会很像架构师的表达。
-
----
-
-# 九、成本说明（Cost Considerations）
-
-这个非常值得写。
-
-例如：
-
-- VPC, subnets, route tables, and Internet Gateway do not incur hourly charges
-- Future additions such as NAT Gateway, ALB, ECS, and RDS will incur costs
-- Resources should be destroyed after testing
-
-再附上：
-
-```bash
-terraform destroy
-```
-
-这会体现你的云成本意识。
-
----
-
-# 十、验证方式（Validation）
-
-说明你如何验证架构正确。
-
-例如：
-
-- Verified Terraform syntax with `terraform validate`
-- Reviewed planned infrastructure with `terraform plan`
-- Confirmed resource relationships in AWS console
-- Validated subnet-to-route-table associations
-
----
-
-# 十一、经验总结（Lessons Learned）
-
-这是最能体现“成长”的部分。
-
-例如：
-
-- I learned that subnets themselves are not inherently public or private; their behavior is determined by route tables.
-- I clarified that an Internet Gateway is a VPC-level resource, not an AZ-level resource.
-- I understood that one route table can be shared by subnets in different AZs when the routing policy is the same.
-- I also learned that high availability of the Internet Gateway is managed by AWS.
-
-这一部分非常适合放到 README 最后。
-
----
-
-# 十二、建议的 README 结构
-
-你可以直接按下面结构写：
-
-```markdown
-# AWS Three-Tier Web Application - Phase 1: VPC Foundation
-
-## Project Overview
-## Goals
-## Architecture Diagram
-## Architecture Design
-## Network Design
-## Terraform Implementation
-## Resources Created
-## Validation
-## Security Considerations
-## Cost Considerations
-## Next Steps
-## Lessons Learned
-```
-
----
-
-# 十三、最简版描述模板
-
-如果你想先写一个简短版，可以直接用这个：
-
-> This project is the first phase of an AWS three-tier web application portfolio.  
-> In this phase, I built the VPC foundation using Terraform, including one custom VPC, six subnets across two Availability Zones, one Internet Gateway, three route tables, and subnet-to-route-table associations.  
-> The design separates public, application, and database layers to reflect a production-style network architecture.  
-> This project helped me better understand AWS networking fundamentals such as subnet segmentation, route table behavior, Internet Gateway scope, and multi-AZ design.  
-> In the next phase, I will extend the architecture with NAT Gateway, ALB, ECS, RDS, and CloudFront.
-
----
-
-如果你愿意，我下一步可以直接帮你写一版：
-
-**适合放到 GitHub README 的英文作品集描述**  
-或者  
-**中英双语版本**。
